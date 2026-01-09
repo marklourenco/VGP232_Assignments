@@ -245,18 +245,18 @@ namespace Assignment1
                     // TODO: validate that the string array the size expected.
                     if (values.Length != 4)
                     {
-                        // Invalid line format, skip this line or handle the error as needed
+                        // Invalid line format, skip this line
                         continue;
                     }
                     // TODO: use int.Parse or TryParse for stats/number values.
                     if (!int.TryParse(values[2], out int rarity))
                     {
-                        // Invalid rarity format, skip this line or handle the error as needed
+                        // Invalid rarity format, skip this line
                         continue;
                     }
                     if (!int.TryParse(values[3], out int baseAttack))
                     {
-                        // Invalid base attack format, skip this line or handle the error as needed
+                        // Invalid base attack format, skip this line
                         continue;
                     }
                     // Populate the properties of the Weapon
