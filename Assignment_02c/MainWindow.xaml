@@ -1,0 +1,46 @@
+﻿<Window x:Class="Assignment_02c.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Weapon Manager" Height="450" Width="800">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <Button Content="Load" Click="LoadClicked" Margin="0,0,5,0"/>
+            <Button Content="Save" Click="SaveClicked" Margin="0,0,5,0"/>
+            <Button Content="Add" Click="AddClicked" Margin="0,0,5,0"/>
+            <Button Content="Edit" Click="EditClicked" Margin="0,0,5,0"/>
+            <Button Content="Remove" Click="RemoveClicked"/>
+        </StackPanel>
+
+        <ListBox x:Name="WeaponListBox" Grid.Row="1"/>
+
+        <StackPanel Grid.Row="2" Margin="0,10,0,0">
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Sort:" Margin="0,0,10,0"/>
+                <RadioButton Content="Name" Checked="SortRadioSelected"/>
+                <RadioButton Content="Type" Checked="SortRadioSelected"/>
+                <RadioButton Content="Rarity" Checked="SortRadioSelected"/>
+                <RadioButton Content="BaseAttack" Checked="SortRadioSelected"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <TextBlock Text="Filter Type:" Margin="0,0,10,0"/>
+                <ComboBox x:Name="FilterTypeComboBox"
+                          Width="150"
+                          SelectionChanged="FilterTypeOnlySelectionChanged"/>
+            </StackPanel>
+
+            <TextBox x:Name="FilterNameTextBox"
+                     Margin="0,5,0,0"
+                     TextChanged="FilterNameTextChanged"/>
+        </StackPanel>
+
+    </Grid>
+</Window>
