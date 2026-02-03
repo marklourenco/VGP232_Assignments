@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Assignment1
 {
@@ -33,79 +29,58 @@ namespace Assignment1
         /// <param name="left">Left side Weapon</param>
         /// <param name="right">Right side Weapon</param>
         /// <returns> -1 (or any other negative value) for "less than", 0 for "equals", or 1 (or any other positive value) for "greater than"</returns>
-        public static int CompareByName(Weapon left, Weapon right)
-        {
-            return left.Name.CompareTo(right.Name);
-        }
+        public static int CompareByName(Weapon left, Weapon right) => left.Name.CompareTo(right.Name);
+
         // TODO: add sort for each property:
         // CompareByType
-        public static int CompareByType(Weapon left, Weapon right)
-        {
-            return left.Type.CompareTo(right.Type);
-        }
+        public static int CompareByType(Weapon left, Weapon right) => left.Type.CompareTo(right.Type);
+
         // CompareByRarity
-        public static int CompareByRarity(Weapon left, Weapon right)
-        {
-            return left.Rarity.CompareTo(right.Rarity);
-        }
+        public static int CompareByRarity(Weapon left, Weapon right) => left.Rarity.CompareTo(right.Rarity);
+
         // CompareByBaseAttack
-        public static int CompareByBaseAttack(Weapon left, Weapon right)
-        {
-            return left.BaseAttack.CompareTo(right.BaseAttack);
-        }
+        public static int CompareByBaseAttack(Weapon left, Weapon right) => left.BaseAttack.CompareTo(right.BaseAttack);
 
         /// <summary>
         /// The Weapon string with all the properties
         /// </summary>
-        /// <returns>The Weapon formated string</returns>
+        /// <returns>The Weapon formatted string</returns>
         public override string ToString()
         {
-            // TODO: construct a comma seperated value string
+            // TODO: construct a comma separated value string
             // Name,Type,Rarity,BaseAttack
-            string result = $"{Name},{Type},{Image},{Rarity},{BaseAttack},{SecondaryStat},{Passive}";
-            return result;
+            return $"{Name},{Type},{Image},{Rarity},{BaseAttack},{SecondaryStat},{Passive}";
         }
 
+        /// <summary>
+        /// Tries to parse a comma-separated string into a Weapon object
+        /// </summary>
+        /// <param name="rawData">CSV string of the weapon</param>
+        /// <param name="weapon">Output weapon object</param>
+        /// <returns>True if parsing succeeded, false otherwise</returns>
         public static bool TryParse(string rawData, out Weapon weapon)
         {
+            weapon = null;
+
+            if (string.IsNullOrWhiteSpace(rawData))
+                return false;
+
             string[] values = rawData.Split(',');
-
-            weapon = new Weapon();
-
-            // use tryparse for each property, if any fails return false
-            weapon.Name = values[0];
-            if (Enum.TryParse<WeaponType>(values[1], out WeaponType type))
-            {
-                weapon.Type = type;
-            }
-            else
-            {
-                Console.Write($"Type {values[1]} is invalid format");
+            if (values.Length < 7)
                 return false;
-            }
-            weapon.Image = values[2];
-            if (int.TryParse(values[3], out int rarity))
-            {
-                weapon.Rarity = rarity;
-            }
-            else
-            {
-                Console.Write($"Rarity {values[3]} is invalid format");
-                return false;
-            }
-            if (int.TryParse(values[4], out int baseAttack))
-            {
-                weapon.BaseAttack = baseAttack;
-            }
-            else
-            {
-                Console.Write($"Base Attack {values[4]} is invalid format");
-                return false;
-            }
-            weapon.SecondaryStat = values[5];
-            weapon.Passive = values[6];
 
-            weapon = new Weapon()
+            // Parse each property safely
+            if (!Enum.TryParse(values[1], out WeaponType type))
+                return false;
+
+            if (!int.TryParse(values[3], out int rarity))
+                return false;
+
+            if (!int.TryParse(values[4], out int baseAttack))
+                return false;
+
+            // Assign parsed values
+            weapon = new Weapon
             {
                 Name = values[0],
                 Type = type,

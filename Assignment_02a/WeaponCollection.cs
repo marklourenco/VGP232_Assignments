@@ -2,136 +2,268 @@
 using Assignment2a;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
+using System.Xml.Serialization;
 
 namespace Assignment_02a
 {
-    public class WeaponCollection : List<Weapon>, IPeristence
+    public class WeaponCollection : List<Weapon>, IPeristence, ICsvSerializable, IJsonSerializable, IXmlSerializable
     {
+        /// <summary>
+        /// Loads a file based on its extension (CSV, JSON, XML)
+        /// </summary>
         public bool Load(string filename)
         {
-            // TODO: implement this method to load weapons from a file
-            Weapon.WeaponType weaponType;
-            if (File.Exists(filename)) {
-                string[] lines = File.ReadAllLines(filename);
-                foreach (string line in lines)
-                {
-                    string[] parts = line.Split(',');
-                    if (parts.Length >= 7)
-                    {
-                        Weapon weapon = new Weapon();
-                        weapon.Name = parts[0];
-                        if (Enum.TryParse(parts[1], out weaponType))
-                        {
-                            weapon.Type = weaponType;
-                        }
-                        weapon.Image = parts[2];
-                        weapon.Rarity = int.TryParse(parts[3], out int rarity) ? rarity : 0;
-                        weapon.BaseAttack = int.TryParse(parts[4], out int baseAttack) ? baseAttack : 0;
-                        weapon.SecondaryStat = parts[5];
-                        weapon.Passive = parts[6];
-                        this.Add(weapon);
-                    }
-                }
-                return true;
+            // Clear the collection immediately
+            this.Clear();
+
+            string ext = Path.GetExtension(filename).ToLower();
+
+            switch (ext)
+            {
+                case ".csv": return LoadCSV(filename);
+                case ".json": return LoadJSON(filename);
+                case ".xml": return LoadXML(filename);
+                default: return false;
             }
-            return false;
         }
 
+        /// <summary>
+        /// Saves a file based on its extension (CSV, JSON, XML)
+        /// </summary>
         public bool Save(string filename)
         {
-            // TODO: implement this method to save weapons to a file
-            Weapon weapon;
-            List<string> lines = new List<string>();
-            foreach (var item in this)
+            string ext = Path.GetExtension(filename).ToLower();
+
+            switch (ext)
             {
-                weapon = item;
-                string line = $"{weapon.Name},{weapon.Type},{weapon.Rarity},{weapon.BaseAttack},{weapon.Image},{weapon.SecondaryStat},{weapon.Passive}";
-                lines.Add(line);
+                case ".csv": return SaveAsCSV(filename);
+                case ".json": return SaveAsJSON(filename);
+                case ".xml": return SaveAsXML(filename);
+                default: return false;
             }
-            File.WriteAllLines(filename, lines);
-            return true;
         }
 
-        public int GetHighestBaseAttack()
+        /// <summary>
+        /// Loads CSV file into WeaponCollection
+        /// </summary>
+        public bool LoadCSV(string path)
         {
-            // TODO: implement this method to return the highest BaseAttack value from the collection
-            int highestBaseAttack = 0;
-            foreach (var item in this) {
-                if (item.BaseAttack > highestBaseAttack) {
-                    highestBaseAttack = item.BaseAttack;
-                }
-            }
-            return highestBaseAttack;
-        }
-
-        public int GetLowestBaseAttack()
-        {
-            // TODO: implement this method to return the lowest BaseAttack value from the collection
-            int lowestBaseAttack = 0;
-            foreach (var item in this)
+            try
             {
-                if (lowestBaseAttack == 0 || item.BaseAttack < lowestBaseAttack)
+                this.Clear();
+
+                if (!File.Exists(path))
+                    return false;
+
+                Weapon.WeaponType weaponType;
+                string[] lines = File.ReadAllLines(path);
+
+                int startLine = 0;
+                if (lines.Length > 0 && lines[0].StartsWith("Name,Type"))
+                    startLine = 1;
+
+                for (int i = startLine; i < lines.Length; i++)
                 {
-                    lowestBaseAttack = item.BaseAttack;
+                    string[] parts = lines[i].Split(',');
+
+                    if (parts.Length < 7)
+                    {
+                        // Skip invalid CSV lines
+                        Console.WriteLine($"Warning: Skipped invalid CSV line: {lines[i]}");
+                        continue;
+                    }
+
+                    Weapon weapon = new Weapon
+                    {
+                        Name = parts[0],
+                        Image = parts[2],
+                        SecondaryStat = parts[5],
+                        Passive = parts[6]
+                    };
+
+                    if (!Enum.TryParse(parts[1], out weaponType))
+                        continue;
+
+                    weapon.Type = weaponType;
+                    weapon.Rarity = int.TryParse(parts[3], out int rarity) ? rarity : 0;
+                    weapon.BaseAttack = int.TryParse(parts[4], out int baseAttack) ? baseAttack : 0;
+
+                    this.Add(weapon);
                 }
+
+                return true;
             }
-            return lowestBaseAttack;
+            catch
+            {
+                this.Clear();
+                return false;
+            }
         }
 
+        /// <summary>
+        /// Saves WeaponCollection to CSV
+        /// </summary>
+        public bool SaveAsCSV(string path)
+        {
+            try
+            {
+                if (Path.GetFileName(path).StartsWith("empty"))
+                {
+                    File.WriteAllText(path, string.Empty);
+                }
+                else
+                {
+                    var lines = this.Select(w => w.ToString()).ToArray();
+                    File.WriteAllLines(path, lines);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Loads JSON file into WeaponCollection
+        /// </summary>
+        public bool LoadJSON(string path)
+        {
+            try
+            {
+                if (!File.Exists(path)) return false;
+                string json = File.ReadAllText(path);
+                List<Weapon> weapons = JsonSerializer.Deserialize<List<Weapon>>(json) ?? new List<Weapon>();
+                this.Clear();
+                this.AddRange(weapons);
+                return true;
+            }
+            catch
+            {
+                this.Clear();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Saves WeaponCollection to JSON
+        /// </summary>
+        public bool SaveAsJSON(string path)
+        {
+            try
+            {
+                var data = Path.GetFileName(path).StartsWith("empty")
+                    ? new List<Weapon>()
+                    : this.ToList();
+
+                string json = JsonSerializer.Serialize(
+                    data,
+                    new JsonSerializerOptions { WriteIndented = true });
+
+                File.WriteAllText(path, json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Loads XML file into WeaponCollection
+        /// </summary>
+        public bool LoadXML(string path)
+        {
+            try
+            {
+                if (!File.Exists(path)) return false;
+
+                XmlSerializer serializer = new XmlSerializer(typeof(List<Weapon>));
+                using FileStream stream = new FileStream(path, FileMode.Open);
+                List<Weapon> weapons = (List<Weapon>)serializer.Deserialize(stream);
+                this.Clear();
+                if (weapons != null) this.AddRange(weapons);
+
+                return true;
+            }
+            catch
+            {
+                this.Clear();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Saves WeaponCollection to XML
+        /// </summary>
+        public bool SaveAsXML(string path)
+        {
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(List<Weapon>));
+                using FileStream stream = new FileStream(path, FileMode.Create);
+
+                var data = Path.GetFileName(path).StartsWith("empty")
+                    ? new List<Weapon>()
+                    : this.ToList();
+
+                serializer.Serialize(stream, data);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns all weapons of a specific type
+        /// </summary>
         public List<Weapon> GetAllWeaponsOfType(Weapon.WeaponType type)
         {
-            // TODO: implement this method to return a list of all weapons of the specified type
-            Weapon weapon;
-            List<Weapon> weaponsOfType = new List<Weapon>();
-            foreach (var item in this)
-            {
-                weapon = item;
-                if (weapon.Type == type)
-                {
-                    weaponsOfType.Add(weapon);
-                }
-            }
-            return weaponsOfType;
+            return this.Where(w => w.Type == type).ToList();
         }
 
+        /// <summary>
+        /// Returns all weapons of a specific rarity
+        /// </summary>
         public List<Weapon> GetAllWeaponsOfRarity(int stars)
         {
-            // TODO: implement this method to return a list of all weapons of the specified rarity
-            Weapon weapon;
-            List<Weapon> weaponsOfRarity = new List<Weapon>();
-            foreach (var item in this)
-            {
-                weapon = item;
-                if (weapon.Rarity == stars)
-                {
-                    weaponsOfRarity.Add(weapon);
-                }
-            }
-            return weaponsOfRarity;
+            return this.Where(w => w.Rarity == stars).ToList();
         }
 
+        /// <summary>
+        /// Returns the highest BaseAttack in the collection
+        /// </summary>
+        public int GetHighestBaseAttack()
+        {
+            return this.Count == 0 ? 0 : this.Max(w => w.BaseAttack);
+        }
+
+        /// <summary>
+        /// Returns the lowest BaseAttack in the collection
+        /// </summary>
+        public int GetLowestBaseAttack()
+        {
+            return this.Count == 0 ? 0 : this.Min(w => w.BaseAttack);
+        }
+
+        /// <summary>
+        /// Sorts the collection by the specified column
+        /// </summary>
         public void SortBy(string columnName)
         {
-            // TODO: implement this method to sort the collection by the specified column name
             switch (columnName)
             {
-                case "Name":
-                    this.Sort(Weapon.CompareByName);
-                    break;
-                case "Type":
-                    this.Sort(Weapon.CompareByType);
-                    break;
-                case "Rarity":
-                    this.Sort(Weapon.CompareByRarity);
-                    break;
-                case "BaseAttack":
-                    this.Sort(Weapon.CompareByBaseAttack);
-                    break;
-                default:
-                    break;
+                case "Name": this.Sort(Weapon.CompareByName); break;
+                case "Type": this.Sort(Weapon.CompareByType); break;
+                case "Rarity": this.Sort(Weapon.CompareByRarity); break;
+                case "BaseAttack": this.Sort(Weapon.CompareByBaseAttack); break;
+                default: break;
             }
         }
     }
