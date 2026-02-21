@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36717.8
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureAtlasLib", "VGP232_Assignment3\TextureAtlasLib\TextureAtlasLib.csproj", "{E2F791AA-9FE7-C98F-21C0-3E469F10AA57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF_Sprite_Sheet_Creator", "WPF_Sprite_Sheet_Creator\WPF_Sprite_Sheet_Creator.csproj", "{5D2E99AE-25DA-44D7-8D99-C1B04AEE21E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E2F791AA-9FE7-C98F-21C0-3E469F10AA57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2F791AA-9FE7-C98F-21C0-3E469F10AA57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2F791AA-9FE7-C98F-21C0-3E469F10AA57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2F791AA-9FE7-C98F-21C0-3E469F10AA57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D2E99AE-25DA-44D7-8D99-C1B04AEE21E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D2E99AE-25DA-44D7-8D99-C1B04AEE21E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D2E99AE-25DA-44D7-8D99-C1B04AEE21E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D2E99AE-25DA-44D7-8D99-C1B04AEE21E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C39C2564-9EEF-41C5-9346-4884F69BECA1}
+	EndGlobalSection
+EndGlobal
