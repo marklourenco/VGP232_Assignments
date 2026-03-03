@@ -19,4 +19,5 @@ MonoBehaviour:
   atk: 1
   def: 3
   image: {fileID: -4338564409936619454, guid: c3cbd015370c5294385a8d880c234850, type: 3}
+  iconImage: {fileID: 7854409646409066988, guid: 4a82e804aa2303243a2809843ec25157, type: 3}
   theme: 0

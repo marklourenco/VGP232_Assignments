@@ -21,6 +21,7 @@ public class CardData : ScriptableObject
 
     [Header("Image")]
     [SerializeField] public Sprite image;
+    [SerializeField] public Sprite iconImage;
 
     [Header("Theme")]
     [SerializeField] public Theme theme;

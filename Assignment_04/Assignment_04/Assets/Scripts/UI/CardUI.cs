@@ -11,6 +11,7 @@ public class CardUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI attackText;
     [SerializeField] private TextMeshProUGUI defenseText;
     [SerializeField] private Image cardImage;
+    [SerializeField] private Image cardIconImage;
 
     public void Setup(CardData card, ThemeData theme)
     {
@@ -27,6 +28,7 @@ public class CardUI : MonoBehaviour
         attackText.text = "ATK: " + card.atk.ToString();
         defenseText.text = "DEF: " + card.def.ToString();
         cardImage.sprite = card.image;
+        cardIconImage.sprite = card.iconImage;
 
         ApplyTheme(theme, card.theme);
     }
