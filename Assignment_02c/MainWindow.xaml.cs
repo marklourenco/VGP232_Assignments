@@ -1,25 +1,17 @@
 ﻿using Microsoft.Win32;
-using System.Text;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WeaponLib;
-using System.ComponentModel;
 
 namespace Assignment_02c
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        WeaponCollection mWeaponCollection;
+        private WeaponCollection mWeaponCollection;
         private ICollectionView _weaponView;
 
         public MainWindow()
@@ -29,99 +21,119 @@ namespace Assignment_02c
             mWeaponCollection = new WeaponCollection();
             WeaponListBox.ItemsSource = mWeaponCollection;
 
-            _weaponView = CollectionViewSource.GetDefaultView(WeaponListBox.ItemsSource);
+            _weaponView = CollectionViewSource.GetDefaultView(mWeaponCollection);
 
-            // Populate WeaponType combo box
-            FilterTypeComboBox.ItemsSource =
-                Enum.GetNames(typeof(Weapon.WeaponType));
+            var types = new List<string> { "All" };
+            types.AddRange(Enum.GetNames(typeof(Weapon.WeaponType)));
+
+            FilterTypeComboBox.ItemsSource = types;
+            FilterTypeComboBox.SelectedIndex = 0;
         }
 
         private void LoadClicked(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "All Supported|*.csv;*.json;*.xml";
+            dlg.Filter = "CSV Files (*.csv)|*.csv|JSON Files (*.json)|*.json|XML Files (*.xml)|*.xml";
 
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog() != true)
+                return;
+
+            bool result = mWeaponCollection.Load(dlg.FileName);
+
+            if (!result)
             {
-                mWeaponCollection.Load(dlg.FileName);
-                WeaponListBox.Items.Refresh();
+                MessageBox.Show("Load failed. Check file format.");
+                return;
             }
+
+            _weaponView.Refresh();
         }
 
         private void SaveClicked(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Filter = "CSV|*.csv|JSON|*.json|XML|*.xml";
+            dlg.Filter = "CSV Files (*.csv)|*.csv|JSON Files (*.json)|*.json|XML Files (*.xml)|*.xml";
 
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog() != true)
+                return;
+
+            if (!mWeaponCollection.Save(dlg.FileName))
             {
-                mWeaponCollection.Save(dlg.FileName);
+                MessageBox.Show("Save failed.");
             }
         }
 
         private void AddClicked(object sender, RoutedEventArgs e)
         {
-            EditWeaponWindow win = new EditWeaponWindow(null);
+            EditWeaponWindow win = new EditWeaponWindow();
+
             if (win.ShowDialog() == true)
             {
                 mWeaponCollection.Add(win.TempWeapon);
-                _weaponView.Refresh();
             }
         }
 
         private void EditClicked(object sender, RoutedEventArgs e)
         {
-            Weapon selected = WeaponListBox.SelectedItem as Weapon;
-            if (selected == null) return;
+            if (WeaponListBox.SelectedItem is not Weapon selected)
+                return;
 
             EditWeaponWindow win = new EditWeaponWindow(selected);
+
             if (win.ShowDialog() == true)
             {
                 _weaponView.Refresh();
             }
         }
 
-
         private void RemoveClicked(object sender, RoutedEventArgs e)
         {
-            Weapon selected = WeaponListBox.SelectedItem as Weapon;
-            if (selected == null) return;
+            if (WeaponListBox.SelectedItem is not Weapon selected)
+                return;
 
             mWeaponCollection.Remove(selected);
-            WeaponListBox.Items.Refresh();
         }
 
         private void SortRadioSelected(object sender, RoutedEventArgs e)
         {
-            RadioButton rb = sender as RadioButton;
+            if (sender is not RadioButton rb)
+                return;
+
             mWeaponCollection.SortBy(rb.Content.ToString());
-            WeaponListBox.Items.Refresh();
         }
 
         private void FilterTypeOnlySelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (FilterTypeComboBox.SelectedItem == null) return;
-
-            Weapon.WeaponType type = (Weapon.WeaponType)Enum.Parse(
-                typeof(Weapon.WeaponType),
-                FilterTypeComboBox.SelectedItem.ToString());
-
-            _weaponView.Filter = w => ((Weapon)w).Type == type;
-            _weaponView.Refresh();
+            ApplyFilters();
         }
 
         private void FilterNameTextChanged(object sender, TextChangedEventArgs e)
         {
-            string text = FilterNameTextBox.Text;
-
-            _weaponView.Filter = w =>
-            {
-                Weapon weapon = (Weapon)w;
-                return weapon.Name.StartsWith(text, StringComparison.OrdinalIgnoreCase);
-            };
-            _weaponView.Refresh();
+            ApplyFilters();
         }
 
-    }
+        private void ApplyFilters()
+        {
+            _weaponView.Filter = item =>
+            {
+                if (item is not Weapon weapon)
+                    return false;
 
+                // Type filter
+                string selectedType = FilterTypeComboBox.SelectedItem?.ToString();
+                bool typeMatch = selectedType == "All" ||
+                                 weapon.Type.ToString() == selectedType;
+
+                // Name filter
+                string nameFilter = FilterNameTextBox.Text ?? "";
+                bool nameMatch = weapon.Name.StartsWith(
+                    nameFilter,
+                    StringComparison.OrdinalIgnoreCase);
+
+                return typeMatch && nameMatch;
+            };
+
+            _weaponView.Refresh();
+        }
+    }
 }
