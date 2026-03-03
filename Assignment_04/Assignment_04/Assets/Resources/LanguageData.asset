@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9761349ab5a13de40a9fc092fea3a6cf, type: 3}
+  m_Name: LanguageData
+  m_EditorClassIdentifier: Assembly-CSharp::LanguageData
+  localizations:
+  - key: CARD_FIRE_NAME
+    en: Fire High Goblin
+    fr: Fire High Goblin
+    sp: Fire High Goblin
+  - key: CARD_FIRE_DESC
+    en: All goblins in play gain +1 attack.
+    fr: All goblins in play gain +1 attack.
+    sp: All goblins in play gain +1 attack.
+  - key: CARD_WIND_NAME
+    en: Wind Goblin
+    fr: Wind Goblin
+    sp: Wind Goblin
+  - key: CARD_WIND_DESC
+    en: This minion attacks twice.
+    fr: This minion attacks twice.
+    sp: This minion attacks twice.
+  - key: CARD_WATER_NAME
+    en: Water Goblin
+    fr: Water Goblin
+    sp: Water Goblin
+  - key: CARD_WATER_DESC
+    en: This minion heals all allies by +1 every turn.
+    fr: This minion heals all allies by +1 every turn.
+    sp: This minion heals all allies by +1 every turn.
+  - key: CARD_EARTH_NAME
+    en: Earth Goblin
+    fr: Earth Goblin
+    sp: Earth Goblin
+  - key: CARD_EARTH_DESC
+    en: All enemies take 2 damage every turn.
+    fr: All enemies take 2 damage every turn.
+    sp: All enemies take 2 damage every turn.

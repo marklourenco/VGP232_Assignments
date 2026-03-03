@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87f7d4c69faa8ce48b99271aadcc4d0a, type: 3}
+  m_Name: ThemeData
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeData
+  regularFontType: {fileID: 11400000, guid: 79307f501eb267b44be9d7ca808a3dfb, type: 2}
+  regularFontColor: {r: 1, g: 1, b: 1, a: 1}
+  regularButtonStyle: {fileID: -4338564409936619454, guid: c3cbd015370c5294385a8d880c234850, type: 3}
+  specialFontType: {fileID: 11400000, guid: c5421d755213ec9489b14c2688ce2231, type: 2}
+  specialFontColor: {r: 1, g: 0, b: 0, a: 1}
+  specialButtonStyle: {fileID: 802451727016168549, guid: c3cbd015370c5294385a8d880c234850, type: 3}
